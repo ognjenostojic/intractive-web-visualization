@@ -1,0 +1,12 @@
+{
+"type": "FeatureCollection",
+"name": "my_parks_locations",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "name": "Đerdap National Park" }, "geometry": { "type": "Point", "coordinates": [ 22.04, 44.672 ] } },
+{ "type": "Feature", "properties": { "name": "Tara National Park" }, "geometry": { "type": "Point", "coordinates": [ 19.564, 43.89 ] } },
+{ "type": "Feature", "properties": { "name": "Kopaonik National Park" }, "geometry": { "type": "Point", "coordinates": [ 20.812, 43.298 ] } },
+{ "type": "Feature", "properties": { "name": "Fruška Gora National Park" }, "geometry": { "type": "Point", "coordinates": [ 19.7251, 45.1567 ] } },
+{ "type": "Feature", "properties": { "name": "Šar Planina National Park" }, "geometry": { "type": "Point", "coordinates": [ 20.7536, 42.1881 ] } }
+]
+}
