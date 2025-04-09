@@ -13,7 +13,7 @@ library(terra)
 library(shinyWidgets)
 
 setwd("C:/Users/Ognjen/Desktop/Interactive Web Visualization for Hydroclimatologycal Data/Project/")
-source("plots_each_and_all_park.R")
+source("R/plots_each_and_all_park.R")
 
 # Load raster and boundary
 load_heatmap_components <- function() {
@@ -79,7 +79,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  data <- read_csv("updated_precipitation_type_data.csv") %>%
+  data <- read_csv("data/updated_precipitation_type_data.csv") %>%
     mutate(time = as.Date(time))
   
   precip_json <- fromJSON("geo/my_precipitation.json")
