@@ -2,7 +2,7 @@ library(dplyr)
 library(readr)
 library(jsonlite)
 
-data <- read_csv("updated_precipitation_type_data.csv")  # Replace with your correct path
+data <- read_csv("data/updated_precipitation_type_data.csv")  # Replace with your correct path
 class(data)
 
 
