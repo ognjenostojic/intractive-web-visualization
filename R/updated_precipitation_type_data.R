@@ -3,7 +3,7 @@ library(dplyr)
 library(geosphere)
 
 # Read the CSV file
-data <- read_csv("precipitation_type_data.csv")
+data <- read_csv("archive/precipitation_type_data.csv")
 
 # Define the park locations with an additional 'radius' column in meters
 parks <- data.frame(
@@ -35,4 +35,4 @@ data_clean <- data %>%
   filter(!is.na(ptype), !is.na(time), !is.na(park), !is.na(latitude), !is.na(longitude))
 
 # Write the cleaned data to CSV
-write_csv(data_clean, "updated_precipitation_type_data.csv")
+write_csv(data_clean, "data/updated_precipitation_type_data.csv")
