@@ -11,14 +11,16 @@ library(jsonlite)
 library(stars)
 library(terra)
 library(shinyWidgets)
+library(here)
 
-setwd("C:/Users/Ognjen/Desktop/Interactive Web Visualization for Hydroclimatologycal Data/Project/")
-source("R/plots_each_and_all_park.R")
+source(here::here("R", "plots_each_and_all_park.R"))
 
 # Load raster and boundary
 load_heatmap_components <- function() {
-  serbia <- st_read("geo/srbija_boundary.geojson", quiet = TRUE)
-  nc_path <- "data/b434c48329f85d2eadfa24ba366a5f8/data_stepType-avg.nc"
+  serbia <- st_read(here::here("geo", "srbija_boundary.geojson"), quiet = TRUE)
+
+  nc_path <- here::here("data", "data_stepType-avg.nc") 
+
   r <- read_stars(nc_path)
   st_crs(r) <- 4326
   names(r) <- "precip"
@@ -27,10 +29,13 @@ load_heatmap_components <- function() {
     origin <- as.POSIXct("1970-01-01", tz = "UTC")
     as.Date(as.POSIXct(raw_times, origin = origin))
   }, error = function(e) NULL)
+
   serbia_aligned <- st_transform(serbia, st_crs(r))
   r_cropped <- tryCatch({ st_crop(r, serbia_aligned) }, error = function(e) r)
+
   list(serbia = serbia_aligned, r_cropped = r_cropped, time_dim = time_dim)
 }
+
 
 heatmap_components <- load_heatmap_components()
 
@@ -79,10 +84,10 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  data <- read_csv("data/updated_precipitation_type_data.csv") %>%
+  data <- read_csv(here::here("data", "updated_precipitation_type_data.csv")) %>%
     mutate(time = as.Date(time))
   
-  precip_json <- fromJSON("geo/my_precipitation.json")
+  precip_json <- fromJSON(here::here("geo", "my_precipitation.json"))
   precip_df <- bind_rows(lapply(precip_json, function(x) {
     data.frame(
       park = rep(x$park, length(x$time)),
