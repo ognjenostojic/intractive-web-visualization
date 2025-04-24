@@ -21,25 +21,16 @@ load_heatmap_components <- function() {
   r <- read_stars(nc_path)
   st_crs(r) <- 4326
   names(r) <- "precip"
-  
   time_dim <- tryCatch({
     raw_times <- st_get_dimension_values(r, "valid_time")
     origin <- as.POSIXct("1970-01-01", tz = "UTC")
     as.Date(as.POSIXct(raw_times, origin = origin))
   }, error = function(e) NULL)
-  
   serbia_aligned <- st_transform(serbia, st_crs(r))
   r_cropped <- tryCatch({ st_crop(r, serbia_aligned) }, error = function(e) r)
-  
   all_vals <- as.vector(r_cropped[[1]])
   color_domain <- range(all_vals, na.rm = TRUE)
-  
-  list(
-    serbia = serbia_aligned,
-    r_cropped = r_cropped,
-    time_dim = time_dim,
-    color_domain = color_domain
-  )
+  list(serbia = serbia_aligned, r_cropped = r_cropped, time_dim = time_dim, color_domain = color_domain)
 }
 
 heatmap_components <- load_heatmap_components()
@@ -60,9 +51,12 @@ ui <- fluidPage(
                   choices = c("All Parks", "Đerdap National Park", "Tara National Park",
                               "Kopaonik National Park", "Fruška Gora National Park",
                               "Šar Planina National Park")),
-      dateRangeInput("date_range", "Select Date Range:",
-                     start = min(heatmap_components$time_dim),
-                     end = max(heatmap_components$time_dim)),
+      conditionalPanel(
+        condition = "['ggiraph', 'Plotly', 'ECharts'].includes(input.tabs)",
+        dateRangeInput("date_range", "Select Date Range:",
+                       start = min(heatmap_components$time_dim),
+                       end = max(heatmap_components$time_dim))
+      ),
       conditionalPanel(
         condition = "input.tabs == 'Heatmap'",
         sliderTextInput("date_index", "Select Date for Heatmap:",
@@ -96,7 +90,6 @@ ui <- fluidPage(
                                      code("data/data_stepType-avg.nc"), ". It represents spatial precipitation averages over time."),
                              tags$li(strong("Park Locations & Boundaries:"), " Custom GeoJSON files created or curated for the Serbian national park regions.")
                            ),
-                           
                            h4("Precipitation Type Categories"),
                            tags$ul(
                              tags$li(strong("1:"), " Rain"),
@@ -104,10 +97,8 @@ ui <- fluidPage(
                              tags$li(strong("3:"), " Freezing Rain"),
                              tags$li(strong("4:"), " Ice Pellets / Sleet")
                            ),
-                           p("These values are plotted over time to show how the type of precipitation varied at different national parks."),
+                           p("These values are plotted over time to show how the type of precipitation varied at different national parks.")
                   )
-                          
-      
       )
     )
   )
@@ -127,6 +118,7 @@ server <- function(input, output, session) {
   }))
   
   filtered_data <- reactive({
+    req(input$date_range)
     data %>%
       filter(time >= input$date_range[1], time <= input$date_range[2])
   })
