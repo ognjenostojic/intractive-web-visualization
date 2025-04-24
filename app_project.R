@@ -82,7 +82,32 @@ ui <- fluidPage(
                   tabPanel("ggiraph", girafeOutput("girafePlot", width = "100%", height = "400px")),
                   tabPanel("Plotly", plotlyOutput("plotlyPlot")),
                   tabPanel("ECharts", echarts4rOutput("echartsPlot")),
-                  tabPanel("Heatmap", leafletOutput("heatmap", height = 700))
+                  tabPanel("Heatmap", leafletOutput("heatmap", height = 700)),
+                  tabPanel("About", 
+                           h3("About this App"),
+                           p("This interactive Shiny application visualizes precipitation data across several national parks in Serbia."),
+                           p("It supports multiple visualization types including static plots, interactive charts, and a heatmap."),
+                           p("The underlying data is derived from NetCDF climate data and JSON-formatted precipitation type records."),
+                           p("Use the sidebar to select a national park and time range, then explore the various tabs for visual insights."),
+                           h4("Data Sources"),
+                           tags$ul(
+                             tags$li(strong("Precipitation Types:"), " Derived from JSON-formatted park-specific records prepared for the course."),
+                             tags$li(strong("Gridded Climate Data:"), " NetCDF dataset provided in the course materials, specifically ", 
+                                     code("data/data_stepType-avg.nc"), ". It represents spatial precipitation averages over time."),
+                             tags$li(strong("Park Locations & Boundaries:"), " Custom GeoJSON files created or curated for the Serbian national park regions.")
+                           ),
+                           
+                           h4("Precipitation Type Categories"),
+                           tags$ul(
+                             tags$li(strong("1:"), " Rain"),
+                             tags$li(strong("2:"), " Snow"),
+                             tags$li(strong("3:"), " Freezing Rain"),
+                             tags$li(strong("4:"), " Ice Pellets / Sleet")
+                           ),
+                           p("These values are plotted over time to show how the type of precipitation varied at different national parks."),
+                  )
+                          
+      
       )
     )
   )
