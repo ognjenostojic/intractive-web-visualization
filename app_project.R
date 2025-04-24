@@ -15,27 +15,32 @@ library(here)
 
 source(here::here("R", "plots_each_and_all_park.R"))
 
-# Load raster and boundary
 load_heatmap_components <- function() {
   serbia <- st_read(here::here("geo", "srbija_boundary.geojson"), quiet = TRUE)
-
-  nc_path <- here::here("data", "data_stepType-avg.nc") 
-
+  nc_path <- here::here("data", "data_stepType-avg.nc")
   r <- read_stars(nc_path)
   st_crs(r) <- 4326
   names(r) <- "precip"
+  
   time_dim <- tryCatch({
     raw_times <- st_get_dimension_values(r, "valid_time")
     origin <- as.POSIXct("1970-01-01", tz = "UTC")
     as.Date(as.POSIXct(raw_times, origin = origin))
   }, error = function(e) NULL)
-
+  
   serbia_aligned <- st_transform(serbia, st_crs(r))
   r_cropped <- tryCatch({ st_crop(r, serbia_aligned) }, error = function(e) r)
-
-  list(serbia = serbia_aligned, r_cropped = r_cropped, time_dim = time_dim)
+  
+  all_vals <- as.vector(r_cropped[[1]])
+  color_domain <- range(all_vals, na.rm = TRUE)
+  
+  list(
+    serbia = serbia_aligned,
+    r_cropped = r_cropped,
+    time_dim = time_dim,
+    color_domain = color_domain
+  )
 }
-
 
 heatmap_components <- load_heatmap_components()
 
@@ -190,7 +195,7 @@ server <- function(input, output, session) {
     vals <- terra::values(slice_rast)
     if (all(is.na(vals))) return()
     
-    pal <- colorNumeric(input$palette_choice, domain = vals, na.color = "transparent")
+    pal <- colorNumeric(input$palette_choice, domain = heatmap_components$color_domain, na.color = "transparent")
     
     leafletProxy("heatmap") %>%
       clearImages() %>%
@@ -201,7 +206,7 @@ server <- function(input, output, session) {
       addCircleMarkers(data = parks_static, ~lon, ~lat,
                        label = ~name, radius = 5, fillColor = "red",
                        stroke = TRUE, color = "white", weight = 1, fillOpacity = 0.9) %>%
-      addLegend(pal = pal, values = vals, title = "Precipitation", position = "bottomright")
+      addLegend(pal = pal, values = heatmap_components$color_domain, title = "Precipitation (fixed scale)", position = "bottomright")
   })
 }
 
