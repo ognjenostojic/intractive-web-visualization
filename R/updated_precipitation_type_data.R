@@ -34,5 +34,11 @@ data$park <- mapply(find_nearest_park_within_radius, data$latitude, data$longitu
 data_clean <- data %>%
   filter(!is.na(ptype), !is.na(time), !is.na(park), !is.na(latitude), !is.na(longitude))
 
-# Write the cleaned data to CSV
+# Deduplicate by averaging ptype for each park and time
+data_clean <- data_clean %>%
+  group_by(park, time) %>%
+  summarise(ptype = mean(ptype, na.rm = TRUE), .groups = "drop")
+
+# Write the cleaned and aggregated data to CSV
 write_csv(data_clean, "updated_precipitation_type_data.csv")
+
