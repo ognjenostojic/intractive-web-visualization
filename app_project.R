@@ -85,10 +85,22 @@ ui <- fluidPage(
                            p("Use the sidebar to select a national park and time range, then explore the various tabs for visual insights."),
                            h4("Data Sources"),
                            tags$ul(
-                             tags$li(strong("Precipitation Types:"), " Derived from JSON-formatted park-specific records prepared for the course."),
-                             tags$li(strong("Gridded Climate Data:"), " NetCDF dataset provided in the course materials, specifically ", 
-                                     code("data/data_stepType-avg.nc"), ". It represents spatial precipitation averages over time."),
-                             tags$li(strong("Park Locations & Boundaries:"), " Custom GeoJSON files created or curated for the Serbian national park regions.")
+                             tags$li(
+                               strong("Precipitation Types:"),
+                               " Derived from JSON-formatted park-specific records prepared for the course."
+                             ),
+                             tags$li(
+                               strong("Gridded Climate Data:"),
+                               " ERA5 monthly averaged reanalysis data on single levels (2005–2025), variable: precipitation type. ",
+                               "Downloaded from the Copernicus Climate Data Store: ",
+                               a("https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-monthly-means",
+                                 href = "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-monthly-means", target = "_blank"),
+                               ". Format: NetCDF."
+                             ),
+                             tags$li(
+                               strong("Park Locations & Boundaries:"),
+                               " Custom GeoJSON files created or curated for the Serbian national park regions."
+                             )
                            ),
                            h4("Precipitation Type Categories"),
                            tags$ul(
@@ -228,3 +240,4 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui = ui, server = server)
+
