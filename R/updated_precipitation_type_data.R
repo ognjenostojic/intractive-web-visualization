@@ -3,7 +3,7 @@ library(dplyr)
 library(geosphere)
 
 # Read the CSV file
-data <- read_csv("archive/precipitation_type_data.csv")
+data <- read_csv("precipitation_type_data.csv")
 
 # Define the park locations with an additional 'radius' column in meters
 parks <- data.frame(
@@ -34,5 +34,10 @@ data$park <- mapply(find_nearest_park_within_radius, data$latitude, data$longitu
 data_clean <- data %>%
   filter(!is.na(ptype), !is.na(time), !is.na(park), !is.na(latitude), !is.na(longitude))
 
-# Write the cleaned data to CSV
-write_csv(data_clean, "data/updated_precipitation_type_data.csv")
+# Deduplicate by averaging ptype for each park and time
+data_clean <- data_clean %>%
+  group_by(park, time) %>%
+  summarise(ptype = mean(ptype, na.rm = TRUE), .groups = "drop")
+
+# Write the cleaned and aggregated data to CSV
+write_csv(data_clean, "updated_precipitation_type_data.csv")
