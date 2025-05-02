@@ -105,10 +105,10 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  data <- read_csv(here::here("data", "updated_precipitation_type_data.csv")) %>%
+  data <- read_csv(here("data", "updated_precipitation_type_data.csv")) %>%
     mutate(time = as.Date(time))
   
-  precip_json <- fromJSON(here::here("geo", "my_precipitation.json"))
+  precip_json <- fromJSON(here("geo", "my_precipitation.json"))
   precip_df <- bind_rows(lapply(precip_json, function(x) {
     data.frame(
       park = rep(x$park, length(x$time)),
