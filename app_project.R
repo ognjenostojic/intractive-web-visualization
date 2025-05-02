@@ -13,11 +13,11 @@ library(terra)
 library(shinyWidgets)
 library(here)
 
-source(here::here("R", "plots_each_and_all_park.R"))
+source(here("R", "plots_each_and_all_park.R"))
 
 load_heatmap_components <- function() {
-  serbia <- st_read(here::here("geo", "srbija_boundary.geojson"), quiet = TRUE)
-  nc_path <- here::here("data", "data_stepType-avg.nc")
+  serbia <- st_read(here("geo", "srbija_boundary.geojson"), quiet = TRUE)
+  nc_path <- here("data", "data_stepType-avg.nc")
   r <- read_stars(nc_path)
   st_crs(r) <- 4326
   names(r) <- "precip"
